@@ -1,21 +1,17 @@
 package com.zhy.sort.api;
 
-import cn.hutool.core.collection.CollUtil;
-import com.zhy.sort.context.SorterContext;
 import com.zhy.sort.model.common.Result;
 import com.zhy.sort.model.dto.DecimalListDTO;
 import com.zhy.sort.model.dto.IntegerListDTO;
 import com.zhy.sort.model.dto.StringListDTO;
-import com.zhy.sort.service.Sorter;
+import com.zhy.sort.service.ISortedService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
-import java.util.List;
+import javax.annotation.Resource;
 
 /**
  * 排序Api
@@ -27,6 +23,9 @@ import java.util.List;
 @RequestMapping("/v1/sorted")
 public class SortedApi {
 
+    @Resource
+    private ISortedService iSortedService;
+
     /**
      * 保存排序后的整型列表
      *
@@ -35,17 +34,7 @@ public class SortedApi {
      */
     @PostMapping("/integer")
     public Result<IntegerListDTO> addSortedInteger(@RequestBody IntegerListDTO dto) {
-        List<Integer> originIntegers = dto.getData();
-        if (CollUtil.isEmpty(originIntegers)) {
-            return Result.error(HttpStatus.NO_CONTENT.value(), "没有需要排序的数据");
-        }
-
-        Sorter<Integer> sorter = SorterContext.getSorter(Integer.class);
-        if (sorter == null) {
-            return Result.error(HttpStatus.NOT_IMPLEMENTED.value(), "不支持的数据类型");
-        }
-
-        dto.setData(sorter.sort(originIntegers));
+        dto.setData(iSortedService.addSortedData(dto.getData()));
         return Result.success(dto);
     }
 
@@ -57,17 +46,7 @@ public class SortedApi {
      */
     @PostMapping("/string")
     public Result<StringListDTO> addSortedString(@RequestBody StringListDTO dto) {
-        List<String> originStrings = dto.getData();
-        if (CollUtil.isEmpty(originStrings)) {
-            return Result.error(HttpStatus.NO_CONTENT.value(), "没有需要排序的数据");
-        }
-
-        Sorter<String> sorter = SorterContext.getSorter(String.class);
-        if (sorter == null) {
-            return Result.error(HttpStatus.NOT_IMPLEMENTED.value(), "不支持的数据类型");
-        }
-
-        dto.setData(sorter.sort(originStrings));
+        dto.setData(iSortedService.addSortedData(dto.getData()));
         return Result.success(dto);
     }
 
@@ -79,17 +58,7 @@ public class SortedApi {
      */
     @PostMapping("/decimal")
     public Result<DecimalListDTO> addSortedDecimal(@RequestBody DecimalListDTO dto) {
-        List<BigDecimal> originDecimals = dto.getData();
-        if (CollUtil.isEmpty(originDecimals)) {
-            return Result.error(HttpStatus.NO_CONTENT.value(), "没有需要排序的数据");
-        }
-
-        Sorter<BigDecimal> sorter = SorterContext.getSorter(BigDecimal.class);
-        if (sorter == null) {
-            return Result.error(HttpStatus.NOT_IMPLEMENTED.value(), "不支持的数据类型");
-        }
-
-        dto.setData(sorter.sort(originDecimals));
+        dto.setData(iSortedService.addSortedData(dto.getData()));
         return Result.success(dto);
     }
 
